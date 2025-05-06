@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer (Hours & Minutes)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 16px;
+        }
+        #timer {
+            font-size: 48px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Countdown Timer (Hours & Minutes)</h2>
+
+    <div>
+        <label>Select Duration:</label>
+        <input type="number" id="hours" placeholder="Hours" min="0" value="0">
+        <input type="number" id="minutes" placeholder="Minutes" min="0" max="59" value="0">
+        <button onclick="startDurationTimer()">Start Duration Timer</button>
+    </div>
+
+    <div>
+        <label>OR Specify End Time:</label>
+        <input type="time" id="endTime">
+        <button onclick="startEndTimeTimer()">Start End Time Timer</button>
+    </div>
+
+    <div id="timer">00:00</div>
+
+    <script>
+        let countdown;
+
+        function startDurationTimer() {
+            clearInterval(countdown);
+            let hrs = parseInt(document.getElementById('hours').value, 10);
+            let mins = parseInt(document.getElementById('minutes').value, 10);
+
+            let totalSeconds = (hrs * 3600) + (mins * 60);
+
+            startCountdown(totalSeconds);
+        }
+
+        function startEndTimeTimer() {
+            clearInterval(countdown);
+            const endTimeInput = document.getElementById('endTime').value;
+            if (!endTimeInput) {
+                alert("Please specify an end time.");
+                return;
+            }
+
+            const [endHour, endMinute] = endTimeInput.split(':').map(Number);
+            const now = new Date();
+            const endTime = new Date(now);
+
+            endTime.setHours(endHour, endMinute, 0, 0); // Set local time explicitly
+
+            if (endTime <= now) {
+                endTime.setDate(endTime.getDate() + 1);
+            }
+
+            const totalSeconds = Math.floor((endTime - now) / 1000);
+            startCountdown(totalSeconds);
+        }
+
+        function startCountdown(totalSeconds) {
+            updateTimerDisplay(totalSeconds);
+
+            countdown = setInterval(() => {
+                totalSeconds--;
+
+                if (totalSeconds < 0) {
+                    clearInterval(countdown);
+                    document.getElementById('timer').textContent = "Time's up!";
+                    return;
+                }
+
+                updateTimerDisplay(totalSeconds);
+            }, 1000);
+        }
+
+        function updateTimerDisplay(seconds) {
+            let hrs = Math.floor(seconds / 3600);
+            let mins = Math.floor((seconds % 3600) / 60);
+
+            document.getElementById('timer').textContent =
+                `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+        }
+    </script>
+
+</body>
+</html>
